@@ -1,5 +1,6 @@
 // Luiz Fernando, Bruno Dalponte
 
+#include "runner.h"
 
 /*
     This is the main file that runs our tests.
@@ -9,7 +10,7 @@
         TCP testing of 1 mB transference
     
     These will be tested using
-        Short messages (minimal).
+        Shortest possible messages.
         Longest possible messages.
         Window behaviour (For TCP)
         no Window behaviour (For TCP)
