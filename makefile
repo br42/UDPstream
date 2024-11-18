@@ -1,0 +1,36 @@
+EXE = runner
+
+SRC = $(wildcard ./SourceCode/*.c)
+OBJ = $(SRC:.c=.o)
+
+#--
+
+
+all : $(EXE) clean
+
+
+#--
+
+
+CFLAGS = -Wall -g
+
+
+#--
+
+
+purge :	clean
+	@rm -f $(EXE)
+	@echo "terminado purge"
+
+clean :
+	@rm -f $(OBJ)
+	@echo "terminado clean"
+
+
+#--
+
+
+$(EXE) : $(OBJ)
+
+
+#--
