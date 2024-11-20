@@ -22,7 +22,11 @@
 */
 
 
-int main(int argc, char argv[]) {
+// main code that runs our tests
+int main(int argc, char* argv[]) {
+
+    con_network_prep();
+
     // Prepare workspace
 
 
@@ -41,5 +45,5 @@ int main(int argc, char argv[]) {
 
     // Finish workspace
 
-
+    return 0;
 }

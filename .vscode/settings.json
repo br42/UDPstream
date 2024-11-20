@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "runner.h": "c"
+        "runner.h": "c",
+        "netdb.h": "c"
     }
 }
