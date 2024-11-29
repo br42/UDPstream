@@ -29,7 +29,40 @@ int main(int argc, char* argv[]) {
 
     // Prepare workspace
 
+    int runnerType;
+    int ipDestino;
 
+    fprintf(stderr, "       Servidor(1) ou Cliente(2)\n");
+    scanf("%d", &runnerType);
+
+
+    switch(runnerType) {
+        default:    // exit
+            fprintf(stderr, "Saindo sem fazer nada...\n");
+            return 0;
+        break;
+
+        case (1):   // servidor
+
+            
+
+        break;
+
+        case (2):   // Cliente
+            fprintf(stderr, "       Insira o IP do Host do servidor\n\n");
+            scanf("%d", &ipDestino);
+
+            //--
+
+
+        break;
+    }
+
+    //--
+
+    
+
+    
 
     // Run UDP test
 
