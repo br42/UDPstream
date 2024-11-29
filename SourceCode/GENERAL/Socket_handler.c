@@ -32,7 +32,7 @@ void sck_network_prep() {
 // socket_type: is either SOCK_STREAM for TCP | SOCK_DGRAM for UDP
 // host: the server name to send messages to
 // port: the number of the port this socket opens
-socket_sender_info* socket_create_sender(char* host, int socket_type, int port) {
+socket_sender_info* socket_create_sender(char* host, int socket_type) {
 
     //// ==== Alloc memory for the socket
 
@@ -44,7 +44,7 @@ socket_sender_info* socket_create_sender(char* host, int socket_type, int port) 
 
     //// ==== Set basic variables
 
-    sckt->socket_info.sin_port = htons(port);
+    sckt->socket_info.sin_port = htons(PORT);
     sckt->socket_info.sin_family = AF_INET;     // Always AF_INET == IPv4 Adress use
 
     //// ==== Set server IP via parameter
@@ -72,11 +72,16 @@ socket_sender_info* socket_create_sender(char* host, int socket_type, int port) 
 }
 
 
+
+//--------------------------------------
+
+
+
 // Create and opens a listener-socket.
 // socket_type: is either SOCK_STREAM for TCP | SOCK_DGRAM for UDP
 // port: the number of the port this socket opens
 // maxConnections: TCP only, set how many connections the server will allow
-socket_listener_info* socket_create_listener(int socket_type, int port, int maxConnections) {
+socket_listener_info* socket_create_listener(int socket_type, int maxConnections) {
 
     //// ==== Alloc memory for the socket
 
@@ -88,7 +93,7 @@ socket_listener_info* socket_create_listener(int socket_type, int port, int maxC
 
     //// ==== Set basic variables
 
-    sckt->socket_info.sin_port = htons(port);
+    sckt->socket_info.sin_port = htons(PORT);
     sckt->socket_info.sin_family = AF_INET;     // Always AF_INET == IPv4 Adress use
 
     //// ==== Set server-IP via this machine's name
@@ -145,6 +150,59 @@ void socket_close_listener(socket_listener_info* sckt) {
     //--
 
     free(sckt);
+}
+
+
+
+//--------------------------------------
+
+
+
+// fill a buffer up to the size determined
+void socket_fill_buffer(socket_sender_info* sckt, int sizeToFill) {
+
+    if ((sizeToFill % 4) == 0) {
+        for (int i = 0; i < sizeToFill; i += 4) {
+            sckt->buffer[i]   = (i % 255);
+            sckt->buffer[i+1] = (i+1 % 255);
+            sckt->buffer[i+2] = (i+2 % 255);
+            sckt->buffer[i+3] = (i+3 % 255);
+        }
+
+        return;
+    }
+
+    //--
+
+    if ((sizeToFill % 3) == 0) {
+        for (int i = 0; i < sizeToFill; i += 3) {
+            sckt->buffer[i]   = (i % 255);
+            sckt->buffer[i+1] = (i+1 % 255);
+            sckt->buffer[i+2] = (i+2 % 255);
+        }
+
+        return;
+    }
+
+    //--
+
+    if ((sizeToFill % 2) == 0) {
+        for (int i = 0; i < sizeToFill; i += 2) {
+            sckt->buffer[i]   = (i % 255);
+            sckt->buffer[i+1] = (i+1 % 255);
+        }
+
+        return;
+    }
+
+    //--
+
+    for (int i = 0; i < sizeToFill; i++) {
+        sckt->buffer[i] = (i % 255);
+    }
+
+    return;
+
 }
 
 

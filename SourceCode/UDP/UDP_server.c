@@ -21,6 +21,19 @@ int usvr_prep_listener_socket(socket_listener_info* sckt) {
 
 
 // receive a message from the internet
-int usvr_receive_message() {
+int usvr_receive_message(socket_listener_info* sckt) {
 
+    int sz = sizeof(sckt->socket_info);
+
+    //--
+
+    fprintf(stderr, "Esperando mensagem...\n");
+
+    int msgReceived = recvfrom(sckt->socket_identifier, sckt->buffer, BUFSIZ, 0, (struct sockaddr*) &sckt->listener_socket_info, &sz);
+
+    fprintf(stderr, "%d bytes recebidos de cliente\n", sz);
+
+    //--
+
+    return msgReceived;
 }
