@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"-->
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Relatório do Trabalho Prático de Redes 2</title>
+
+        <link rel="stylesheet" type="text/css" href="mainTable.css" /> 
+    </head>
+    <body>
+        <h2>Redes II<br />
+            Relatório do Trabalho Prático de Redes II</h2>
+        <div class="author" > <span| 
+            class="ecrm-1200">Bruno Dal Pontte</span>
+            <br /> <span 
+            class="ectt-1200">GRR20206151 </span><br class="and" /><span 
+            class="ecrm-1200">Luiz Fernando Giongo dos Santos</span>
+            <br />          <span 
+            class="ectt-1200">GRR20203965</span></div><br />
+            <div class="date" ><span 
+            class="ecrm-1200">30 de novembro de 2024</span></div>
+        </div>
+        <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
+        id="x1-10001"></a>Introdução</h3>
+        <!--l. 50--><p class="noindent" >Neste trabalho implementamos um detector de falhas vCube (versão 2) dentro do ambiente de simulação
+        SMPL (<span 
+        class="ecti-1000">Simulation Programming Language</span>). Nesse relatório será apresentado o resultado de diversos testes,
+        emulando diversos eventos em cenários com quantidade diferentes de processos.
+        </p><!--l. 52--><p class="noindent" >
+        </p>
+        <h3 class="sectionHead"><span class="titlemark">2   </span> <a 
+        id="x1-20002"></a>Detalhes de Implementação</h3>
+        <!--l. 54--><p class="noindent" >Nessa implementação do vCube, a cada intervalo de teste, todos os clusters são testados. Ou seja, ao invés de
+        testar apenas um outro processo por intervalo, o testador irá testar todos os vizinhos, ou todos os outros
+        processos necessários, quando o período de teste chegar.
+        </p><!--l. 56--><p class="indent" >   Como essa é a versão 2 do vCube, apenas o primeiro processo correto de cada cluster irá procurar por
+        outros processos corretos no cluster vizinho caso o seu vizinho esteja falho. Caso esse primeiro processo esteja
+        falho ou seja desconhecido por algum processo, outro processo que não é o primeiro do cluster também pode
+        tentar buscar por outros processos corretos. Isso garante que o pior caso tenha N*logN testes, sendo N o
+        número de processos do sistema.
+        </p><!--l. 58--><p class="indent" >   Além disso, toda vez que um testador executa o seu teste em outro processo, ele obterá todas as novidades
+        que esse outro processo obteve em seus testes. Para isso, cada processo armazena um vetor com os
+        estados dos outros processos (vetor State[]) e um outro vetor com o tempo em que cada um desses
+        estados foi descoberto (vetor StateTimestamp[]). Com isso, é possível comparar qual estado
+        conhecido é mais recente, obte-lo caso o vizinho tenha um mais recente e ainda evita problemas de
+        inconsistência.
+        </p>
+
+        <a href="sisdis-tp1/relatorio">Link para o relatório do Trabalho Prático 1 de Sistemas Distribuídos</a> <br/>
+        <a href="sisdis-tp2/relatorio">Link para o relatório do Trabalho Prático 2 de Sistemas Distribuídos</a> <br/>
+    </body>
+</html>
