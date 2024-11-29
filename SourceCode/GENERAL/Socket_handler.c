@@ -19,7 +19,7 @@ network_info netInfo;
 // required initial preparation to use the network
 void sck_network_prep() {
     gethostname(netInfo.host_name, 64);
-    fprintf(stderr, "DEBUGG:: Nome da maquina: %s\n", netInfo.host_name);
+    fprintf(stderr, "DEBUG:: Nome dessa maquina: %s\n", netInfo.host_name);
 }
 
 
@@ -97,13 +97,16 @@ socket_listener_info* socket_create_listener(int socket_type) {
 
     //// ==== Set server-IP via this machine's name
 
-    if ((sckt->socket_host = gethostbyname(netInfo.host_name)) == NULL) {
+    sckt->socket_host = gethostbyname(netInfo.host_name);
+    if (sckt->socket_host == NULL) {
 		fprintf(stderr, "ERRO, host que deveria ser essa maquina nao encontrado\n");
         free(sckt);
 		return 0;
 	}
 
-    bcopy((char *) sckt->socket_host->h_addr, (char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket address
+    fprintf(stderr, "DEBUG:: IP dessa maquina %s\n", sckt->socket_host->h_addr_list[0]);
+
+    bcopy((char *) sckt->socket_host->h_addr_list[0], (char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket address
 
     //// ==== Obtain socket listener identifier
 
