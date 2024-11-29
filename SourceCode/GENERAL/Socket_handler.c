@@ -103,9 +103,7 @@ socket_listener_info* socket_create_listener(int socket_type) {
 		return 0;
 	}
 
-    fprintf(stderr, "DEBUGG:: IP dessa maquina %s\n", sckt->socket_host->h_aliases);
-
-    bcopy((char *) sckt->socket_host->h_name, (char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket address
+    bcopy((char *) sckt->socket_host->h_addr, (char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket address
 
     //// ==== Obtain socket listener identifier
 
