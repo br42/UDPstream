@@ -2,6 +2,7 @@
 
 #include "runner.h"
 
+
 /*
     This is the main file that runs our tests.
 
@@ -44,7 +45,7 @@ int main(int argc, char* argv[]) {
 
         case (1):   // servidor
 
-            
+            socket_listener_info* sckt = socket_create_listener(SOCK_DGRAM);
 
         break;
 
@@ -53,6 +54,7 @@ int main(int argc, char* argv[]) {
             scanf("%d", &ipDestino);
 
             //--
+
 
 
         break;

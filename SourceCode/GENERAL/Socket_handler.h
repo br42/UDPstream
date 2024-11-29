@@ -14,8 +14,7 @@ socket_sender_info* socket_create_sender(char* host, int socket_type);
 // Create and opens a listener-socket.
 // socket_type: is either SOCK_STREAM for TCP | SOCK_DGRAM for UDP
 // port: the number of the port this socket opens
-// maxConnections: TCP only, set how many connections the server will allow
-socket_listener_info* socket_create_listener(int socket_type, int maxConnections);
+socket_listener_info* socket_create_listener(int socket_type);
 
 // necessary functions to properly close a sender-socket
 void socket_close_sender(socket_sender_info* sckt);
