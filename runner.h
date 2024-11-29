@@ -10,8 +10,12 @@
 
 
 
-#include "SourceCode/Structures.h"
+#include "SourceCode/GENERAL/Structures.h"
 
-#include "SourceCode/Connector.h"
-#include "SourceCode/UDP_side.h"
-#include "SourceCode/TCP_side.h"
+#include "SourceCode/GENERAL/Socket_handler.h"
+
+#include "SourceCode/UDP/UDP_server.h"
+#include "SourceCode/UDP/UDP_cliente.h"
+
+#include "SourceCode/TCP/TCP_server.h"
+#include "SourceCode/TCP/TCP_cliente.h"

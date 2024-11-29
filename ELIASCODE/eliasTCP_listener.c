@@ -62,10 +62,10 @@ int main (int argc, char *argv[]) {
 	
 	while (1){
 		i = sizeof(enderec_local);
-		if ((sock_atende=accept(sock_escuta, (struct sockaddr *) &enderec_cliente, &i))<0){
-                   puts ( "Nao consegui estabelecer conexao" );
-                   exit (1);
-		}	
+		if ((sock_atende=accept(sock_escuta, (struct sockaddr *) &enderec_cliente, &i)) < 0) {
+            puts ( "Nao consegui estabelecer conexao" );
+            exit (1);
+		}
 
        read(sock_atende, buf, BUFSIZ);
        printf("Sou o servidor, recebi a mensagem----> %s\n", buf);

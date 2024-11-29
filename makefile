@@ -1,6 +1,6 @@
 EXE = runner
 
-SRC = $(wildcard ./SourceCode/*.c)
+SRC = $(wildcard ./SourceCode/*/*.c)
 OBJ = $(SRC:.c=.o)
 
 #--

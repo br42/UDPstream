@@ -1,4 +1,4 @@
-#include "../runner.h"
+#include "../../runner.h"
 
 
 
@@ -8,10 +8,16 @@ network_info netInfo;
 
 //--------------------------------------
 
+/*
+    This file is responsible for all socket manipulations and functions.
+*/
+
+//--------------------------------------
+
 
 
 // required initial preparation to use the network
-void con_network_prep() {
+void sck_network_prep() {
     gethostname(netInfo.host_name, 64);
     fprintf(stderr, "DEBUGG:: Nome da maquina: %s\n", netInfo.host_name);
 }
@@ -26,9 +32,9 @@ void con_network_prep() {
 // socket_type: is either SOCK_STREAM for TCP | SOCK_DGRAM for UDP
 // host: the server name to send messages to
 // port: the number of the port this socket opens
-socket_sender_info* con_create_sender_socket(char* host, int socket_type, int port) {
+socket_sender_info* socket_create_sender(char* host, int socket_type, int port) {
 
-    //// ==== 
+    //// ==== Alloc memory for the socket
 
     socket_sender_info* sckt = malloc(sizeof(socket_sender_info));
     if (sckt == NULL) {
@@ -36,12 +42,12 @@ socket_sender_info* con_create_sender_socket(char* host, int socket_type, int po
         return NULL;
     }
 
-    //// ====
+    //// ==== Set basic variables
 
     sckt->socket_info.sin_port = htons(port);
     sckt->socket_info.sin_family = AF_INET;     // Always AF_INET == IPv4 Adress use
 
-    //// ====
+    //// ==== Set server IP via parameter
 
     if ((sckt->socket_host = gethostbyname(host)) == NULL){
 		fprintf(stderr, "ERRO, IP do host desse socket nao localizado\n");
@@ -51,7 +57,7 @@ socket_sender_info* con_create_sender_socket(char* host, int socket_type, int po
 
     bcopy((char *) sckt->socket_host->h_name, (char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket adress
 
-    //--
+    //// ==== Create socket sender identifier
 
     sckt->socket_identifier = socket(AF_INET, socket_type, 0);
     if (sckt->socket_identifier < 0) {
@@ -60,7 +66,7 @@ socket_sender_info* con_create_sender_socket(char* host, int socket_type, int po
 		return NULL;
 	}
 
-    //--
+    //// ==== return the created socket
 
     return sckt;
 }
@@ -70,7 +76,7 @@ socket_sender_info* con_create_sender_socket(char* host, int socket_type, int po
 // socket_type: is either SOCK_STREAM for TCP | SOCK_DGRAM for UDP
 // port: the number of the port this socket opens
 // maxConnections: TCP only, set how many connections the server will allow
-socket_listener_info* con_create_listener_socket(int socket_type, int port, int maxConnections) {
+socket_listener_info* socket_create_listener(int socket_type, int port, int maxConnections) {
 
     //// ==== Alloc memory for the socket
 
@@ -104,21 +110,10 @@ socket_listener_info* con_create_listener_socket(int socket_type, int port, int 
 		return NULL;
 	}
 
-    //// ==== Set list of senders identifiers for the server
-
-    sckt->tcp_listeners_size = maxConnections;
-    sckt->tcp_listeners = malloc(sizeof(int) * sckt->tcp_listeners_size);
-    if ((sckt->tcp_listeners == NULL) && (sckt->tcp_listeners_size > 0)) {
-        fprintf(stderr, "ERRO, ao criar lista de conexoes do server\n");
-        free(sckt);
-        return 0;
-    }
-
     //// ==== Bind the hearing channel for the server to use
 
     if (bind(sckt->socket_identifier, (struct sockaddr *) &sckt->socket_info, sizeof(sckt->socket_info)) < 0){
 		fprintf(stderr, "ERRO: falha ao estabelecer canal de escuta\n");
-        free(sckt->tcp_listeners);
         free(sckt);
 		return 0;
 	}
@@ -146,14 +141,6 @@ void socket_close_sender(socket_sender_info* sckt) {
 // necessary functions to properly close a listener-socket
 void socket_close_listener(socket_listener_info* sckt) {
     close(sckt->socket_identifier);
-
-    //--
-
-    for(int i = 0; i < sckt->tcp_listeners_size; i++) {
-        close(sckt->tcp_listeners[i]);
-    }
-
-    free(sckt->tcp_listeners);
 
     //--
 

@@ -54,7 +54,7 @@ main ( int argc, char *argv[] )
 
 	// DONE:
 
-	if (bind(s, (struct sockaddr *) &sa,sizeof(sa)) < 0){
+	if (bind(s, (struct sockaddr *) &sa, sizeof(sa)) < 0){
 		puts ( "Nao consegui fazer o bind" );
 		exit ( 1 );
 	}
