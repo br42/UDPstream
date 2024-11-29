@@ -47,6 +47,11 @@ int main(int argc, char* argv[]) {
 
             socket_listener_info* sckt = socket_create_listener(SOCK_DGRAM);
 
+            usvr_prep_listener_socket(sckt);
+            usvr_receive_message(sckt);
+
+            fprintf(stderr, "%d - %d - %d", sckt->buffer[0], sckt->buffer[1], sckt->buffer[2]);
+
         break;
 
         case (2):   // Cliente
@@ -55,7 +60,12 @@ int main(int argc, char* argv[]) {
 
             //--
 
+            socket_sender_info* sckt = socket_create_sender(LOOPBACK, SOCK_DGRAM);
 
+            uclt_prep_sender_socket(sckt);
+            uclt_send_message(sckt, 3);
+            
+            fprintf(stderr, "Terminado...\n");
 
         break;
     }

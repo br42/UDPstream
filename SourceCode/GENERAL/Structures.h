@@ -2,7 +2,7 @@
 
 #define PORT 6287               // the port we'll be using
 #define SENDSIZE 1000           // amount of bytes to send
-#define LOOOPBACK "localhost"   // Nome da maquina de loopback
+#define LOOPBACK "localhost"   // Nome da maquina de loopback
 
 #define MAXHOSTNAME 64
 
