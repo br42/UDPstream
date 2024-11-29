@@ -1,4 +1,4 @@
-// Luiz Fernando, Bruno Dalponte
+// Luiz Fernando, Bruno Dal Pontte
 
 #include "runner.h"
 
@@ -25,7 +25,7 @@
 // main code that runs our tests
 int main(int argc, char* argv[]) {
 
-    con_network_prep();
+    sck_network_prep();
 
     // Prepare workspace
 
