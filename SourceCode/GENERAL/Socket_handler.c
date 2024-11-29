@@ -97,11 +97,13 @@ socket_listener_info* socket_create_listener(int socket_type) {
 
     //// ==== Set server-IP via this machine's name
 
-    if ((sckt->socket_host = gethostbyname(netInfo.host_name)) == NULL){
+    if ((sckt->socket_host = gethostbyname(netInfo.host_name)) == NULL) {
 		fprintf(stderr, "ERRO, host que deveria ser essa maquina nao encontrado\n");
         free(sckt);
 		return 0;
 	}
+
+    fprintf(stderr, "DEBUGG:: IP dessa maquina %s\n", sckt->socket_host->h_aliases);
 
     bcopy((char *) sckt->socket_host->h_name, (char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket address
 
@@ -116,9 +118,9 @@ socket_listener_info* socket_create_listener(int socket_type) {
 
     //// ==== Bind the hearing channel for the server to use
 
-    int erro = bind(sckt->socket_identifier, (struct sockaddr *) &sckt->socket_info, sizeof(sckt->socket_info));
+    int erro = bind(sckt->socket_identifier, (struct sockaddr *) &sckt->socket_info, sizeof(sckt->socket_info));    // DEBUG:
     if (erro < 0) {
-		fprintf(stderr, "ERRO: falha ao estabelecer canal de escuta, erro %d\n", erro);
+		fprintf(stderr, "ERRO: falha ao bindar canal de escuta\n");
         free(sckt);
 		return 0;
 	}
