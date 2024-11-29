@@ -94,7 +94,7 @@ socket_listener_info* socket_create_listener(int socket_type, int maxConnections
     //// ==== Set basic variables
 
     sckt->socket_info.sin_port = htons(PORT);
-    sckt->socket_info.sin_family = AF_INET;     // Always AF_INET == IPv4 Adress use
+    sckt->socket_info.sin_family = AF_INET;     // Always AF_INET == IPv4 Address use
 
     //// ==== Set server-IP via this machine's name
 
@@ -104,7 +104,7 @@ socket_listener_info* socket_create_listener(int socket_type, int maxConnections
 		return 0;
 	}
 
-    bcopy((char *) sckt->socket_host->h_name, (char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket adress
+    bcopy((char *) sckt->socket_host->h_name, (char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket address
 
     //// ==== Obtain socket listener identifier
 
@@ -159,46 +159,17 @@ void socket_close_listener(socket_listener_info* sckt) {
 
 
 // fill a buffer up to the size determined
-void socket_fill_buffer(socket_sender_info* sckt, int sizeToFill) {
+void socket_fill_buffer(socket_sender_info* sckt, unsigned long sizeToFill) {
 
-    if ((sizeToFill % 4) == 0) {
-        for (int i = 0; i < sizeToFill; i += 4) {
-            sckt->buffer[i]   = (i % 255);
-            sckt->buffer[i+1] = (i+1 % 255);
-            sckt->buffer[i+2] = (i+2 % 255);
-            sckt->buffer[i+3] = (i+3 % 255);
-        }
-
-        return;
+    for (unsigned long i = 0; i < 4*(sizeToFill/4ul); i += 4) {
+        sckt->buffer[i]   = (( i ) % 255);
+        sckt->buffer[i+1] = ((i+1) % 255);
+        sckt->buffer[i+2] = ((i+2) % 255);
+        sckt->buffer[i+3] = ((i+3) % 255);
     }
 
-    //--
-
-    if ((sizeToFill % 3) == 0) {
-        for (int i = 0; i < sizeToFill; i += 3) {
-            sckt->buffer[i]   = (i % 255);
-            sckt->buffer[i+1] = (i+1 % 255);
-            sckt->buffer[i+2] = (i+2 % 255);
-        }
-
-        return;
-    }
-
-    //--
-
-    if ((sizeToFill % 2) == 0) {
-        for (int i = 0; i < sizeToFill; i += 2) {
-            sckt->buffer[i]   = (i % 255);
-            sckt->buffer[i+1] = (i+1 % 255);
-        }
-
-        return;
-    }
-
-    //--
-
-    for (int i = 0; i < sizeToFill; i++) {
-        sckt->buffer[i] = (i % 255);
+    for (unsigned long i = 4*(sizeToFill/4ul); i < sizeToFill; i++) {
+        sckt->buffer[i]   = (( i ) % 255);
     }
 
     return;
