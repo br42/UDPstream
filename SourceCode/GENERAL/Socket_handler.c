@@ -116,8 +116,9 @@ socket_listener_info* socket_create_listener(int socket_type) {
 
     //// ==== Bind the hearing channel for the server to use
 
-    if (bind(sckt->socket_identifier, (struct sockaddr *) &sckt->socket_info, sizeof(sckt->socket_info)) < 0){
-		fprintf(stderr, "ERRO: falha ao estabelecer canal de escuta\n");
+    int erro = bind(sckt->socket_identifier, (struct sockaddr *) &sckt->socket_info, sizeof(sckt->socket_info));
+    if (erro < 0) {
+		fprintf(stderr, "ERRO: falha ao estabelecer canal de escuta, erro %d\n", erro);
         free(sckt);
 		return 0;
 	}

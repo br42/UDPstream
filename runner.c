@@ -45,12 +45,12 @@ int main(int argc, char* argv[]) {
 
         case (1):   // servidor
 
-            socket_listener_info* sckt = socket_create_listener(SOCK_DGRAM);
+            socket_listener_info* scktL = socket_create_listener(SOCK_DGRAM);
 
-            usvr_prep_listener_socket(sckt);
-            usvr_receive_message(sckt);
+            usvr_prep_listener_socket(scktL);
+            usvr_receive_message(scktL);
 
-            fprintf(stderr, "%d - %d - %d", sckt->buffer[0], sckt->buffer[1], sckt->buffer[2]);
+            fprintf(stderr, "%d - %d - %d", scktL->buffer[0], scktL->buffer[1], scktL->buffer[2]);
 
         break;
 
@@ -60,10 +60,10 @@ int main(int argc, char* argv[]) {
 
             //--
 
-            socket_sender_info* sckt = socket_create_sender(LOOPBACK, SOCK_DGRAM);
+            socket_sender_info* scktS = socket_create_sender(LOOPBACK, SOCK_DGRAM);
 
-            uclt_prep_sender_socket(sckt);
-            uclt_send_message(sckt, 3);
+            uclt_prep_sender_socket(scktS);
+            uclt_send_message(scktS, 3);
             
             fprintf(stderr, "Terminado...\n");
 

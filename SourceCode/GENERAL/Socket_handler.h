@@ -23,4 +23,4 @@ void socket_close_sender(socket_sender_info* sckt);
 void socket_close_listener(socket_listener_info* sckt);
 
 // fill a buffer up to the size determined
-void socket_fill_buffer(socket_sender_info* sckt, int sizeToFill);
+void socket_fill_buffer(socket_sender_info* sckt, unsigned long sizeToFill);
