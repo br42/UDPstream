@@ -7,7 +7,7 @@
 
 
 // prepares socket to be a UDP listener
-// returns 1 for sucess and 0 for error
+// returns 1 for success and 0 for error
 int usvr_prep_listener_socket(socket_listener_info* sckt) {
 
     // UDP does not need any preparation to receive messages
