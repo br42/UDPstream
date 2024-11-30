@@ -34,6 +34,7 @@ int main(int argc, char* argv[]) {
     char ipDestino[64];
 
     fprintf(stderr, "       Servidor(1) ou Cliente(2)\n");
+    fprintf(stderr, "       Servidor(3) ou Cliente(4) TCP\n");
     scanf("%d", &runnerType);
 
 
@@ -50,7 +51,7 @@ int main(int argc, char* argv[]) {
             usvr_prep_listener_socket(scktL);
             usvr_receive_message(scktL);
 
-            fprintf(stderr, "%d - %d - %d", scktL->buffer[0], scktL->buffer[1], scktL->buffer[2]);
+            fprintf(stderr, "%d - %d - %d\n", scktL->buffer[0], scktL->buffer[1], scktL->buffer[2]);
 
         break;
 
@@ -64,6 +65,32 @@ int main(int argc, char* argv[]) {
 
             uclt_prep_sender_socket(scktS);
             uclt_send_message(scktS, 3);
+            
+            fprintf(stderr, "Terminado...\n");
+
+        break;
+
+        case (3):   // Servidor TCP
+
+            socket_listener_info* scktLT = socket_create_listener(SOCK_STREAM);
+
+            tsvr_prep_listener_socket(scktLT);
+            tsvr_receive_message(scktLT);
+
+            fprintf(stderr, "%d - %d - %d\n", scktLT->buffer[0], scktLT->buffer[1], scktLT->buffer[2]);
+
+        break;
+
+        case (4):   // Cliente TCP
+            fprintf(stderr, "       Insira o IP do Host do servidor\n\n");
+            scanf("%s", ipDestino);
+
+            //--
+            
+            socket_sender_info* scktST = socket_create_sender(ipDestino, SOCK_STREAM);
+
+            tclt_prep_sender_socket(scktST);
+            tclt_send_message(scktST, 3);
             
             fprintf(stderr, "Terminado...\n");
 
