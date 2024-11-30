@@ -49,13 +49,17 @@ socket_sender_info* socket_create_sender(char* host, int socket_type) {
 
     //// ==== Set server IP via parameter
 
-    if ((sckt->socket_host = gethostbyname(host)) == NULL){
+    sckt->socket_host = gethostbyname(host);
+    if (sckt->socket_host == NULL){
 		fprintf(stderr, "ERRO, IP do host desse socket nao localizado\n");
         free(sckt);
 		return 0;
 	}
 
-    bcopy((char *) sckt->socket_host->h_name, (char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket adress
+    fprintf(stderr, "DEBUG:: NOME do servidor %s\n", sckt->socket_host->h_name);
+    fprintf(stderr, "DEBUG:: IP do servidor %s\n", sckt->socket_host->h_addr_list[0]);
+
+    bcopy((unsigned char *) sckt->socket_host->h_addr_list[0], (unsigned char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket adress
 
     //// ==== Create socket sender identifier
 
@@ -104,9 +108,10 @@ socket_listener_info* socket_create_listener(int socket_type) {
 		return 0;
 	}
 
-    fprintf(stderr, "DEBUG:: IP dessa maquina %s\n", sckt->socket_host->h_addr_list[0]);
+    fprintf(stderr, "DEBUG:: IP dessa maquina %d\n", sckt->socket_host->h_addr_list[0]);
 
-    bcopy((char *) sckt->socket_host->h_addr_list[0], (char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket address
+    //sckt->socket_info.sin_addr = *(struct in_addr*)sckt->socket_host->h_addr_list[0];
+    bcopy((unsigned char *) sckt->socket_host->h_addr_list[0], (unsigned char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket address
 
     //// ==== Obtain socket listener identifier
 
@@ -119,7 +124,7 @@ socket_listener_info* socket_create_listener(int socket_type) {
 
     //// ==== Bind the hearing channel for the server to use
 
-    int erro = bind(sckt->socket_identifier, (struct sockaddr *) &sckt->socket_info, sizeof(sckt->socket_info));    // DEBUG:
+    int erro = bind(sckt->socket_identifier, (struct sockaddr *) &sckt->socket_info, sizeof(sckt->socket_info));
     if (erro < 0) {
 		fprintf(stderr, "ERRO: falha ao bindar canal de escuta\n");
         free(sckt);

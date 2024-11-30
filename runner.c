@@ -55,12 +55,12 @@ int main(int argc, char* argv[]) {
         break;
 
         case (2):   // Cliente
-            fprintf(stderr, "       Insira o IP do Host do servidor\n\n");
-            scanf("%d", &ipDestino);
+            //fprintf(stderr, "       Insira o IP do Host do servidor\n\n");
+            //scanf("%d", &ipDestino);
 
             //--
 
-            socket_sender_info* scktS = socket_create_sender(LOOPBACK, SOCK_DGRAM);
+            socket_sender_info* scktS = socket_create_sender("loopback", SOCK_DGRAM);
 
             uclt_prep_sender_socket(scktS);
             uclt_send_message(scktS, 3);
