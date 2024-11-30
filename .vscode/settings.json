@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "runner.h": "c",
-        "netdb.h": "c",
-        "connector.h": "c"
-    }
-}
