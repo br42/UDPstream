@@ -17,8 +17,6 @@ typedef struct __netInfo {
 
 
 typedef struct __sktSndInfo {
-    struct hostent* socket_host;        // net host responsible for this socket
-
     struct sockaddr_in socket_info;     // basic information of this socket
     int socket_identifier;              // numerical identifier of the open socket
 
@@ -34,8 +32,6 @@ typedef struct __sktSndInfo {
 #define MAXFILA 5
 
 typedef struct __sktLstInfo {
-    struct hostent* socket_host;                // net host responsible for this socket
-
     struct sockaddr_in socket_info;             // basic information of this socket
     int socket_identifier;                      // numerical identifier of the open socket
 
