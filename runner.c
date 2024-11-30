@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     // Prepare workspace
 
     int runnerType;
-    int ipDestino;
+    char ipDestino[64];
 
     fprintf(stderr, "       Servidor(1) ou Cliente(2)\n");
     scanf("%d", &runnerType);
@@ -55,14 +55,12 @@ int main(int argc, char* argv[]) {
         break;
 
         case (2):   // Cliente
-            //fprintf(stderr, "       Insira o IP do Host do servidor\n\n");
-            //scanf("%d", &ipDestino);
+            fprintf(stderr, "       Insira o IP do Host do servidor\n\n");
+            scanf("%s", ipDestino);
 
             //--
-
-            char* host = "localhost";
-
-            socket_sender_info* scktS = socket_create_sender(host, SOCK_DGRAM);
+            
+            socket_sender_info* scktS = socket_create_sender(ipDestino, SOCK_DGRAM);
 
             uclt_prep_sender_socket(scktS);
             uclt_send_message(scktS, 3);

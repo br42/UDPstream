@@ -42,17 +42,14 @@ socket_sender_info* socket_create_sender(char* host, int socket_type) {
         return NULL;
     }
 
-    //// ==== Set basic variables
+    bzero(&sckt->socket_info, sizeof(sckt->socket_info));
 
-    sckt->socket_info.sin_port = htons(PORT);
-    sckt->socket_info.sin_family = AF_INET;     // Always AF_INET == IPv4 Adress use
-
-    //// ==== Set server IP via parameter
+    //// ==== Get server IP via parameter
 
     fprintf(stderr, "DEBUG:: tentando achar %s\n", host);
 
     sckt->socket_host = gethostbyname(host);
-    if (sckt->socket_host == NULL){
+    if (sckt->socket_host == NULL) {
 		fprintf(stderr, "ERRO, IP do host desse socket nao localizado\n");
         free(sckt);
 		return 0;
@@ -61,7 +58,11 @@ socket_sender_info* socket_create_sender(char* host, int socket_type) {
     fprintf(stderr, "DEBUG:: NOME do servidor %s\n", sckt->socket_host->h_name);
     fprintf(stderr, "DEBUG:: IP do servidor %s\n", sckt->socket_host->h_addr_list[0]);
 
-    bcopy((unsigned char *) sckt->socket_host->h_addr_list[0], (unsigned char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket adress
+    //// ==== Set basic variables
+
+    sckt->socket_info.sin_port = htons(PORT);                                                       // Get PORT to use
+    sckt->socket_info.sin_family = AF_INET;                                                         // Always AF_INET == IPv4 Adress use
+    sckt->socket_info.sin_addr = *((struct in_addr *) sckt->socket_host->h_addr_list[0]);          // Set server IP
 
     //// ==== Create socket sender identifier
 
@@ -96,10 +97,7 @@ socket_listener_info* socket_create_listener(int socket_type) {
         return NULL;
     }
 
-    //// ==== Set basic variables
-
-    sckt->socket_info.sin_port = htons(PORT);
-    sckt->socket_info.sin_family = AF_INET;     // Always AF_INET == IPv4 Address use
+    bzero(&sckt->socket_info, sizeof(sckt->socket_info));
 
     //// ==== Set server-IP via this machine's name
 
@@ -110,10 +108,14 @@ socket_listener_info* socket_create_listener(int socket_type) {
 		return 0;
 	}
 
-    fprintf(stderr, "DEBUG:: IP dessa maquina %d\n", sckt->socket_host->h_addr_list[0]);
+    fprintf(stderr, "DEBUG:: NOME dessa maquina %s\n", sckt->socket_host->h_name);
+    fprintf(stderr, "DEBUG:: IP dessa maquina %s\n", sckt->socket_host->h_addr_list[0]);
 
-    //sckt->socket_info.sin_addr = *(struct in_addr*)sckt->socket_host->h_addr_list[0];
-    bcopy((unsigned char *) sckt->socket_host->h_addr_list[0], (unsigned char *) &sckt->socket_info.sin_addr, sckt->socket_host->h_length);    // copy host IP to socket address
+    //// ==== Set basic variables
+
+    sckt->socket_info.sin_port = htons(PORT);                                                       // Get PORT to use
+    sckt->socket_info.sin_family = AF_INET;                                                         // Always AF_INET == IPv4 Adress use
+    sckt->socket_info.sin_addr = *((struct in_addr *) sckt->socket_host->h_addr_list[0]);          // Set server IP
 
     //// ==== Obtain socket listener identifier
 
@@ -124,7 +126,7 @@ socket_listener_info* socket_create_listener(int socket_type) {
 		return NULL;
 	}
 
-    //// ==== Bind the hearing channel for the server to use
+    //// ==== Bind port to the listener socket
 
     int erro = bind(sckt->socket_identifier, (struct sockaddr *) &sckt->socket_info, sizeof(sckt->socket_info));
     if (erro < 0) {
