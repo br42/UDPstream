@@ -64,7 +64,7 @@ socket_sender_info* socket_create_sender(char* host, int socket_type) {
 
     sckt->socket_info.sin_port = htons(PORT);                                                       // Get PORT to use
     sckt->socket_info.sin_family = AF_INET;                                                         // Always AF_INET == IPv4 Adress use
-    sckt->socket_info.sin_addr = *((struct in_addr *) hp->h_addr_list[0]);          // Set server IP
+    sckt->socket_info.sin_addr = *((struct in_addr *) hp->h_addr_list[0]);                          // Set server IP
 
     //// ==== Create socket sender identifier
 
@@ -103,7 +103,8 @@ socket_listener_info* socket_create_listener(int socket_type) {
 
     //// ==== Set server-IP via this machine's name
 
-    struct hostent* hp = gethostbyname(netInfo.host_name);
+    //struct hostent* hp = gethostbyname(netInfo.host_name);    //DEBUG:
+    struct hostent* hp = gethostbyname(LOOPBACK);
     if (hp == NULL) {
 		fprintf(stderr, "ERRO, host que deveria ser essa maquina nao encontrado\n");
         free(sckt);
