@@ -56,7 +56,9 @@ socket_sender_info* socket_create_sender(char* host, int socket_type) {
 	}
 
     fprintf(stderr, "DEBUG:: NOME do servidor %s\n", sckt->socket_host->h_name);
-    fprintf(stderr, "DEBUG:: IP do servidor %s\n", sckt->socket_host->h_addr_list[0]);
+    char str[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(sckt->socket_host->h_addr_list[0]), str, INET_ADDRSTRLEN);
+    fprintf(stderr, "DEBUG:: IP do servidor %s\n", str);
 
     //// ==== Set basic variables
 
@@ -109,7 +111,9 @@ socket_listener_info* socket_create_listener(int socket_type) {
 	}
 
     fprintf(stderr, "DEBUG:: NOME dessa maquina %s\n", sckt->socket_host->h_name);
-    fprintf(stderr, "DEBUG:: IP dessa maquina %s\n", sckt->socket_host->h_addr_list[0]);
+    char str[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(sckt->socket_host->h_addr_list[0]), str, INET_ADDRSTRLEN);
+    fprintf(stderr, "DEBUG:: IP dessa maquina %s\n", str);
 
     //// ==== Set basic variables
 
