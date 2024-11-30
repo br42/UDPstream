@@ -49,6 +49,8 @@ socket_sender_info* socket_create_sender(char* host, int socket_type) {
 
     //// ==== Set server IP via parameter
 
+    fprintf(stderr, "DEBUG:: tentando achar %s\n", host);
+
     sckt->socket_host = gethostbyname(host);
     if (sckt->socket_host == NULL){
 		fprintf(stderr, "ERRO, IP do host desse socket nao localizado\n");

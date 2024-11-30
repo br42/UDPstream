@@ -60,7 +60,9 @@ int main(int argc, char* argv[]) {
 
             //--
 
-            socket_sender_info* scktS = socket_create_sender("loopback", SOCK_DGRAM);
+            char* host = "localhost";
+
+            socket_sender_info* scktS = socket_create_sender(host, SOCK_DGRAM);
 
             uclt_prep_sender_socket(scktS);
             uclt_send_message(scktS, 3);
