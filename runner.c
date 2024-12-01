@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
 
     sck_network_prep();
 
-    // Prepare workspace
+    //// ================================================ Prepare workspace
 
     int runnerType;
     char ipDestino[64];
@@ -37,15 +37,26 @@ int main(int argc, char* argv[]) {
     fprintf(stderr, "       Servidor(3) ou Cliente(4) TCP\n");
     scanf("%d", &runnerType);
 
+    //// ================================================ PERFORM ACTION REQUESTED
+
+    int bytesReceived;
+    int bytesSent;
+
+    float timeStart;
+    float timeEnd;
 
     switch(runnerType) {
-        default:    // exit
+
+        //// ================================================ EXIT
+
+        default:
             fprintf(stderr, "Saindo sem fazer nada...\n");
             return 0;
         break;
 
+        //// ================================================ SERVIDOR TCP
 
-        case (1):   // servidor
+        case (1):
 
             //// ==== Create variables and sockets
 
@@ -54,7 +65,7 @@ int main(int argc, char* argv[]) {
 
             //// ==== receive all messages until FIM is received
             
-            int bytesReceived = 0;
+            bytesReceived = 0;
 
             while(usvr_receive_message(scktL) >= 0) {
                 bytesReceived += MESSAGESIZE;
@@ -69,8 +80,9 @@ int main(int argc, char* argv[]) {
 
         break;
 
+        //// ================================================ CLIENTE UDP
 
-        case (2):   // Cliente
+        case (2):
 
             //// ==== get Server name
 
@@ -83,10 +95,8 @@ int main(int argc, char* argv[]) {
             uclt_prep_sender_socket(scktS);
 
             //// ==== start sending messages
-
-            int bytesSent;
             
-            float timeStart = clock();
+            timeStart = clock();
             for (bytesSent = 0; bytesSent < SENDSIZE; bytesSent += MESSAGESIZE) {
                 if (uclt_send_message(scktS, MESSAGESIZE) < 0) {
                     bytesSent -= MESSAGESIZE;
@@ -94,20 +104,22 @@ int main(int argc, char* argv[]) {
                     break;
                 }
             }
-            float timeEnd = clock();
+            timeEnd = clock();
 
             uclt_send_FIM_message(scktS);
             
             //// ==== close socket and print output
 
-            fprintf(stderr, "       Bytes enviador : %d\n", bytesSent);
+            fprintf(stderr, "       Bytes enviados : %d\n", bytesSent);
             fprintf(stderr, "       Tempo total : %f\n", ((timeEnd - timeStart) / CLOCKS_PER_SEC));
 
             socket_close_sender(scktS);
 
         break;
 
-        case (5) :  // FIM de emergencia
+        //// ================================================ FIM DE EMERGENCIA UDP
+
+        case (5) :
 
             //// ==== get Server name
 
@@ -116,65 +128,87 @@ int main(int argc, char* argv[]) {
 
             //// ==== Create variables and sockets
             
-            socket_sender_info* scktSS = socket_create_sender(ipDestino, SOCK_DGRAM);
-            uclt_prep_sender_socket(scktSS);
+            socket_sender_info* scktSE = socket_create_sender(ipDestino, SOCK_DGRAM);
+            uclt_prep_sender_socket(scktSE);
 
             //// ==== start sending messages
 
-            uclt_send_FIM_message(scktSS);
+            uclt_send_FIM_message(scktSE);
             
             //// ==== close socket and print output
 
-            socket_close_sender(scktSS);
+            socket_close_sender(scktSE);
 
         break;
 
-        case (3):   // Servidor TCP
+        //// ================================================ SERVIDOR TCP
+
+        case (3):
+
+            //// ==== create socket
 
             socket_listener_info* scktLT = socket_create_listener(SOCK_STREAM);
-
             tsvr_prep_listener_socket(scktLT);
-            tsvr_receive_message(scktLT);
 
-            fprintf(stderr, "%d - %d - %d\n", scktLT->buffer[0], scktLT->buffer[1], scktLT->buffer[2]);
+            //// ==== accept connection
+
+            if (tsvr_accept_listener(scktLT) == 0) {
+                fprintf(stderr, "ERRO: ao aceitar um socket");
+                exit(0);
+            }
+
+            //// ==== receive messages
+
+            bytesReceived = 0;
+            int msgSize;
+            
+            while ((msgSize = tsvr_receive_message(scktLT)) > 0 && bytesReceived < SENDSIZE) {
+                bytesReceived += msgSize;
+            }
+
+            //// ==== stops listening
+
+            tsvr_stop_listening(scktLT);
+
+            //// ==== print output and close socket
+
+            fprintf(stderr, "       bytes recebidos : %d\n", bytesReceived);
+
+            socket_close_listener(scktLT);
 
         break;
 
+        //// ================================================ CLIENTE TCP
+
         case (4):   // Cliente TCP
+
+            //// ==== get Server name
+            
             fprintf(stderr, "       Insira o IP do Host do servidor\n\n");
             scanf("%s", ipDestino);
 
-            //--
+            //// ==== create socket
             
             socket_sender_info* scktST = socket_create_sender(ipDestino, SOCK_STREAM);
-
             tclt_prep_sender_socket(scktST);
-            tclt_send_message(scktST, 3);
-            
-            fprintf(stderr, "Terminado...\n");
+
+            //// ==== send messages
+
+            timeStart = clock();
+            for (bytesSent = 0; bytesSent < SENDSIZE; bytesSent += MESSAGESIZE) {
+                tclt_send_message(scktST, MESSAGESIZE);
+            }
+            timeEnd = clock();
+
+            //// ==== print output and close socket
+
+            fprintf(stderr, "       Bytes enviados : %d\n", bytesSent);
+            fprintf(stderr, "       Tempo total : %f\n", ((timeEnd - timeStart) / CLOCKS_PER_SEC));
+
+            socket_close_sender(scktST);
 
         break;
     }
-
-    //--
-
-    
-
-    
-
-    // Run UDP test
-
-
-
-    // Run TCP test, no window
-
-
-
-    // Run TCP test, window
-
-
-
-    // Finish workspace
 
     return 0;
 }

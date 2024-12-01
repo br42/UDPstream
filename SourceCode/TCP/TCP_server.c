@@ -27,19 +27,17 @@ int tsvr_prep_listener_socket(socket_listener_info* sckt) {
 
 
 // Accept a connection request
-// read messages until stop receiving them
-// close connection
 // return 1 for success, 0 for error
-int tsvr_receive_message(socket_listener_info* sckt) {
+int tsvr_accept_listener(socket_listener_info* sckt) {
     int siz = sizeof(sckt->socket_info);
 
     //--
 
     fprintf(stderr, "Preparando para aceitar conexao...\n");
 
-    int sckt_listening = accept(sckt->socket_identifier, (struct sockaddr *) &sckt->listener_socket_info, &siz);
+    sckt->listener_identifier = accept(sckt->socket_identifier, (struct sockaddr *) &sckt->listener_socket_info, &siz);
 
-    if (sckt_listening < 0) {
+    if (sckt->listener_identifier < 0) {
         fprintf(stderr, "ERRO, falha ao aceitar conexao\n");
         return 0;
     }
@@ -48,23 +46,38 @@ int tsvr_receive_message(socket_listener_info* sckt) {
 
     //--
 
-    int numbytes = 0, recvbytes = 1;
+    return 1;
+}
+
+
+// close listener connection
+// return 1 for success, 0 for error
+int tsvr_stop_listening(socket_listener_info* sckt) {
+    if (sckt->listener_identifier == 0) {
+        fprintf(stderr, "ERRO: fechando listener nao existente\n");
+        return 0;
+    }
+    
+    //--
+
+    close(sckt->listener_identifier);
+    return 1;
+}
+
+
+// read 1 message from listener socket
+// return the size of the message
+int tsvr_receive_message(socket_listener_info* sckt) {
 
     fprintf(stderr, "Recebendo mensagem...\n");
 
-    while(recvbytes) {
-        recvbytes = read(sckt_listening, sckt->buffer + numbytes, (numbytes>BUFSIZ) ? 0 : BUFSIZ-numbytes);
-        numbytes += recvbytes;
-        //fprintf(stderr, "   Recebido %d bytes\n", numbytes);
-    }
-    fprintf(stderr, "   Recebido %d bytes\n", numbytes);
+    int recvBytes = read(sckt->listener_identifier, sckt->buffer, BUFSIZ);
     
-    fprintf(stderr, "Acabou as mensagens, encerrando conexao\n");
+    fprintf(stderr, "   Recebido %d bytes\n", recvBytes);
 
     //--
 
-    close(sckt_listening);
-    return 1;
+    return recvBytes;
 }
 
 

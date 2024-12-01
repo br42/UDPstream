@@ -17,7 +17,7 @@ int tclt_prep_sender_socket(socket_sender_info* sckt) {
 
     //--
 
-    int valtrue = 1, valfalse = 0;
+    int valtrue = 1;
     if(setsockopt(sckt->socket_identifier, IPPROTO_TCP, TCP_NODELAY, &valtrue, sizeof(valtrue)) < 0) {
       fprintf(stderr, "ERRO: Nao foi possivel definir opcoes para o socket\n");
     }
@@ -49,7 +49,7 @@ float tclt_send_message(socket_sender_info* sckt, int msgSize) {
     fprintf(stderr, "Enviando %d bytes de dados...\n", msgSize);
 
     float tStart = clock();       // get the time start
-    int msgSent = sendto(sckt->socket_identifier, sckt->buffer, msgSize, 0, (struct sockaddr *) NULL, 0);
+    int msgSent = sendto(sckt->socket_identifier, sckt->buffer, msgSize, MSG_DONTWAIT, (struct sockaddr *) NULL, 0);
     float tEnd = clock();
 
     //--
@@ -57,8 +57,6 @@ float tclt_send_message(socket_sender_info* sckt, int msgSize) {
     if (msgSent != msgSize) {
         return -2.0f;
     }
-
-    fprintf(stderr, "Mensagem recebida pelo servidor\n");
 
     //--
 

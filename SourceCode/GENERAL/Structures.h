@@ -41,8 +41,9 @@ typedef struct __sktLstInfo {
     int socket_identifier;                      // numerical identifier of the open socket
 
     struct sockaddr_in listener_socket_info;    // basic information of the receiver socket
+    int listener_identifier;                    // numerical identifier of the listener socket
 
-    unsigned char buffer[BUFSIZ];                        // data that is received by this socket
+    unsigned char buffer[BUFSIZ];               // data that is received by this socket
 } socket_listener_info;
 
 
