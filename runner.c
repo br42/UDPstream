@@ -81,9 +81,51 @@ int main(int argc, char* argv[]) {
             
             socket_sender_info* scktS = socket_create_sender(ipDestino, SOCK_DGRAM);
             uclt_prep_sender_socket(scktS);
-            uclt_send_message(scktS, 3);
+
+            //// ==== start sending messages
+
+            int bytesSent;
             
-            fprintf(stderr, "Terminado...\n");
+            float timeStart = clock();
+            for (bytesSent = 0; bytesSent < SENDSIZE; bytesSent += MESSAGESIZE) {
+                if (uclt_send_message(scktS, MESSAGESIZE) < 0) {
+                    bytesSent -= MESSAGESIZE;
+                    fprintf(stderr, "ERRO: ao enviar mensagem\n");
+                    break;
+                }
+            }
+            float timeEnd = clock();
+
+            uclt_send_FIM_message(scktS);
+            
+            //// ==== close socket and print output
+
+            fprintf(stderr, "       Bytes enviador : %d\n", bytesSent);
+            fprintf(stderr, "       Tempo total : %f\n", ((timeEnd - timeStart) / CLOCKS_PER_SEC));
+
+            socket_close_sender(scktS);
+
+        break;
+
+        case (5) :  // FIM de emergencia
+
+            //// ==== get Server name
+
+            fprintf(stderr, "       Insira o IP do Host do servidor\n\n");
+            scanf("%s", ipDestino);
+
+            //// ==== Create variables and sockets
+            
+            socket_sender_info* scktSS = socket_create_sender(ipDestino, SOCK_DGRAM);
+            uclt_prep_sender_socket(scktSS);
+
+            //// ==== start sending messages
+
+            uclt_send_FIM_message(scktSS);
+            
+            //// ==== close socket and print output
+
+            socket_close_sender(scktSS);
 
         break;
 
