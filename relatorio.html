@@ -6,48 +6,348 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>Relatório do Trabalho Prático de Redes 2</title>
 
-        <link rel="stylesheet" type="text/css" href="mainTable.css" /> 
+        <!--link rel="stylesheet" type="text/css" href="relatorio.css" /-->
+        <style>
+            h1, h2, .center {
+                text-align: center;
+            }
+            .centered {
+                align-content: center;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .authortable {
+                border-style: hidden;
+                border-width: 0px;
+            }
+            .authortable tr td {
+                text-align: center;
+                padding: 1px;
+                width: auto;
+            }
+            .noindent {
+                text-indent: 0px;
+            }
+            pre, code, .mono {
+                font-family: monospace;
+                font-size: 120%;
+            }
+            .tableborder, .tableborder * th, .tableborder * * td {
+                border-width: 1px;
+                border-style: solid;
+                border-color: black;
+            }
+            .tableresults {
+                padding: 1px;
+            }
+            .tableresults * tr th, .tableresults tr th {
+                background-color: #ddd;
+            }
+        </style>
     </head>
     <body>
-        <h2>Redes II<br />
-            Relatório do Trabalho Prático de Redes II</h2>
-        <div class="author" > <span 
-            class="ecrm-1200">Bruno Dal Pontte</span>
-            <br /> <span 
-            class="ectt-1200">GRR20206151 </span><br class="and" /><span 
-            class="ecrm-1200">Luiz Fernando Giongo dos Santos</span>
-            <br />          <span 
-            class="ectt-1200">GRR20203965</span></div><br />
-            <div class="date" ><span 
-            class="ecrm-1200">30 de novembro de 2024</span></div>
+        <h2>
+            Redes II<br />
+            Relatório do Trabalho Prático de Redes II
+        </h2>
+        <div class="author"> 
+            <table class="authortable centered"> 
+                <tr>
+                    <td><span>Bruno Dal Pontte</span></td>
+                </tr>
+                <tr>
+                    <td><span class="mono">GRR20206151</span></td>
+                </tr>
+                <tr>
+                    <td><span>Luiz Fernando Giongo dos Santos</span></td>
+                </tr>
+                <tr>
+                    <td><span class="mono">GRR20203965</span></td>
+                </tr>
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="1">
+                        <div class="date center" >
+                            <span>30 de novembro de 2024</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
-        <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
-        id="x1-10001"></a>Introdução</h3>
-        <!--l. 50--><p class="noindent" >Neste trabalho implementamos um detector de falhas vCube (versão 2) dentro do ambiente de simulação
-        SMPL (<span 
-        class="ecti-1000">Simulation Programming Language</span>). Nesse relatório será apresentado o resultado de diversos testes,
-        emulando diversos eventos em cenários com quantidade diferentes de processos.
-        </p><!--l. 52--><p class="noindent" >
+        <h3 class="sectionHead">
+            <span class="titlemark">1</span> 
+            <a id="sec1"></a>Introdução
+        </h3>
+        <p class="noindent">
+            Neste trabalho implementamos um teste de transmissão de pacotes via UDP e TCP, a fim de comparar o desempenho de ambos e conferir suas diferenças na prática.
+            Nesse relatório será apresentado os resultados em termos de tempo decorrido e pacotes perdidos (ou seja, não recebidos pelo destino e não retransmitidos),
+            a fim de analisar os impactos adicionais das retransmissões realizadas pelo TCP na prática.
         </p>
-        <h3 class="sectionHead"><span class="titlemark">2   </span> <a 
-        id="x1-20002"></a>Detalhes de Implementação</h3>
-        <!--l. 54--><p class="noindent" >Nessa implementação do vCube, a cada intervalo de teste, todos os clusters são testados. Ou seja, ao invés de
-        testar apenas um outro processo por intervalo, o testador irá testar todos os vizinhos, ou todos os outros
-        processos necessários, quando o período de teste chegar.
-        </p><!--l. 56--><p class="indent" >   Como essa é a versão 2 do vCube, apenas o primeiro processo correto de cada cluster irá procurar por
-        outros processos corretos no cluster vizinho caso o seu vizinho esteja falho. Caso esse primeiro processo esteja
-        falho ou seja desconhecido por algum processo, outro processo que não é o primeiro do cluster também pode
-        tentar buscar por outros processos corretos. Isso garante que o pior caso tenha N*logN testes, sendo N o
-        número de processos do sistema.
-        </p><!--l. 58--><p class="indent" >   Além disso, toda vez que um testador executa o seu teste em outro processo, ele obterá todas as novidades
-        que esse outro processo obteve em seus testes. Para isso, cada processo armazena um vetor com os
-        estados dos outros processos (vetor State[]) e um outro vetor com o tempo em que cada um desses
-        estados foi descoberto (vetor StateTimestamp[]). Com isso, é possível comparar qual estado
-        conhecido é mais recente, obte-lo caso o vizinho tenha um mais recente e ainda evita problemas de
-        inconsistência.
+        <p class="noindent">
+        </p>
+        <h3 class="sectionHead">
+            <span class="titlemark">2</span> 
+            <a id="sec2"></a>Detalhes de Implementação
+        </h3>
+        <p class="noindent">
+            Os segmentos UDP contém um número de sequência
+            no primeiro byte de cada payload da mensagem, e que vai de 0 até 255.
+        </p>
+        <p class="noindent">
+            A porta utilizada foi a 6287.
+        </p>
+        <p class="noindent">
+            Embora não foi utilizado, temos como tamanho máximo da fila do TCP de 5 conexões em espera.
+        </p>
+        <p class="noindent">
+            A fim de reduzir a latência, no TCP a opção <code class="mono">TCP_NODELAY</code> é definida para o socket na função <code class="mono">setsockopt</code>, a fim de desabilitar o Algoritmo de Nagle, permitindo que a latência de transmissão do TCP seja reduzida. Com isso, o TCP se comporta com uma quantidade de tempo semelhante ao UDP nos nossos testes.
+        </p>
+        <p class="noindent">
+            O UDP verifica que acabou a sequência de mensagens com uma mensagem determinada, ela é feita de 3 chars com valor 1 seguidos. Caso ela seja perdida, outra mensagem assim é reeenvida. Como o tempo é calculado no cliente, isso não afetou a contagem de tempo nos testes.
+        </p>
+        <p class="noindent">
+        </p>
+        <h3 class="sectionHead">
+            <span class="titlemark">3</span> 
+            <a id="sec3"></a>Testes
+        </h3>
+        <p class="noindent">
+            Nessa implementação, os testes foram realizados enviando 1 MB (1000 bytes) entre máquinas, a partir de dados localziados em memória para não sofrer latência com acesso a arquivos em disco.
+        
+        </p>
+        
+        <p class="noindent">
+        </p>
+        <p class="noindent">
+            Fizemos 3 testes, um enviando 1 byte por mensagem, depois 2 bytes, e depois 5 bytes por mensagem. Cada um desses casos foi repetido 10 vezes e foi retirada a média dos resultados.
+        </p>
+        <p class="noindent">
+            Não fizemos preenchimento de buffer, logo o nosso tempo é puramente sobre a transmissão da mensagem.
+        </p>
+        <p class="noindent">
+            As perdas de pacotes UDP são detectadas através dos números de sequência em cada mensagem.
+        </p>
+        <p class="noindent">
+            Nos logs de UDP abaixo foi selecionada uma amostra sem perda de pacotes. Entretanto, ocorreu perda de pacotes nos demais testes, como demonstrado na tabela abaixo.
         </p>
 
-        <a href="sisdis-tp1/relatorio">Link para o relatório do Trabalho Prático 1 de Sistemas Distribuídos</a> <br/>
-        <a href="sisdis-tp2/relatorio">Link para o relatório do Trabalho Prático 2 de Sistemas Distribuídos</a> <br/>
+        <h3><a id="testsudp"></a>Testes via UDP abaixo</h3>
+        
+        <p class="noindent">
+        </p>
+        
+        <table id="testsudp1" class="tableresults tableborder">
+            <thead>
+                <tr><th>1 byte por mensagem</th><th>1000 mensagens</th></tr>
+                <tr><th  class="center" colspan="2">1000 bytes no total</th></tr>
+                <tr><th>Pacotes perdidos</th><th>Tempo</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>278</td><td>0,006848</td></tr>
+                <tr><td>227</td><td>0,006951</td></tr>
+                <tr><td>268</td><td>0,007054</td></tr>
+                <tr><td>162</td><td>0,006847</td></tr>
+                <tr><td>158</td><td>0,007048</td></tr>
+                <tr><td>ERRO</td><td>ERRO</td></tr>
+                <tr><td>130</td><td>0,007315</td></tr>
+                <tr><td>240</td><td>0,007185</td></tr>
+                <tr><td>135</td><td>0,007129</td></tr>
+                <tr><td>383</td><td>0,008125</td></tr>
+            </tbody>
+            <tfoot>
+                <th class="center" colspan="2">Média</th>
+                <tr><td>220,11</td><td>0,007166</td></tr>
+            </tfoot>
+        </table>
+        
+        <p class="noindent"></p>
+
+        <table id="testsudp2" class="tableresults tableborder">
+            <thead>
+                <tr><th>2 bytes por mensagem</th><th>500 mensagens</th></tr>
+                <tr><th class="center" colspan="2">1000 bytes no total</th></tr>
+                <tr><th>Pacotes perdidos</th><th>Tempo</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>54</td><td>0,006759</td></tr>
+                <tr><td>74</td><td>0,005286</td></tr>
+                <tr><td>35</td><td>0,005373</td></tr>
+                <tr><td>34</td><td>0,006089</td></tr>
+                <tr><td>0</td><td>0,005886</td></tr>
+                <tr><td>291</td><td>0,005415</td></tr>
+                <tr><td>0</td><td>0,005717</td></tr>
+                <tr><td>39</td><td>0,006549</td></tr>
+                <tr><td>29</td><td>0,005333</td></tr>
+                <tr><td>0</td><td>0,005677</td></tr>
+            </tbody>
+            <tfoot>
+                <th class="center" colspan="2">Média</th>
+                <tr><td>55,6</td><td>0,005808</td></tr>
+            </tfoot>
+        </table>
+        
+        <p class="noindent"></p>
+        
+        <table id="testsudp3" class="tableresults tableborder">
+            <thead>
+                <tr><th>5 bytes por mensagem</th><th>200 mensagens</th></tr>
+                <tr><th class="center" colspan="2">1000 bytes no total</th></tr>
+                <tr><th>Pacotes perdidos</th><th>Tempo</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>0</td><td>0,002687</td></tr>
+                <tr><td>33</td><td>0,002479</td></tr>
+                <tr><td>0</td><td>0,004662</td></tr>
+                <tr><td>0</td><td>0,002507</td></tr>
+                <tr><td>0</td><td>0,00487</td></tr>
+                <tr><td>0</td><td>0,002729</td></tr>
+                <tr><td>0</td><td>0,002391</td></tr>
+                <tr><td>0</td><td>0,002632</td></tr>
+                <tr><td>0</td><td>0,002384</td></tr>
+                <tr><td>0</td><td>0,002854</td></tr>
+            </tbody>
+            <tfoot>
+                <th class="center" colspan="2">Média</th>
+                <tr><td>3,3</td><td>0,003019</td></tr>
+            </tfoot>
+        </table>
+
+        <p class="noindent"></p>
+
+        <h3><a id="teststcp"></a>Testes via TCP abaixo</h3>
+
+        <p class="noindent">
+        </p>
+
+        <table id="teststcp1" class="tableresults tableborder">
+            <thead>
+                <tr><th>1 byte por mensagem</th><th>1000 mensagens</th></tr>
+                <tr><th  class="center" colspan="2">1000 bytes no total</th></tr>
+                <tr><th>Pacotes perdidos</th><th>Tempo</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>0</td><td>0,007355</td></tr>
+                <tr><td>0</td><td>0,006636</td></tr>
+                <tr><td>0</td><td>0,008224</td></tr>
+                <tr><td>0</td><td>0,007233</td></tr>
+                <tr><td>0</td><td>0,006928</td></tr>
+                <tr><td>0</td><td>0,006804</td></tr>
+                <tr><td>0</td><td>0,008073</td></tr>
+                <tr><td>0</td><td>0,006687</td></tr>
+                <tr><td>0</td><td>0,006915</td></tr>
+                <tr><td>0</td><td>0,006647</td></tr>
+            </tbody>
+            <tfoot>
+                <th class="center" colspan="2">Média</th>
+                <tr><td>0</td><td>0,00715</td></tr>
+            </tfoot>
+        </table>
+
+        <p class="noindent"></p>
+
+        <table id="teststcp2" class="tableresults tableborder">
+            <thead>
+                <tr><th>2 bytes por mensagem</th><th>500 mensagens</th></tr>
+                <tr><th class="center" colspan="2">1000 bytes no total</th></tr>
+                <tr><th>Pacotes perdidos</th><th>Tempo</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>0</td><td>0,005301</td></tr>
+                <tr><td>0</td><td>0,005401</td></tr>
+                <tr><td>0</td><td>0,005855</td></tr>
+                <tr><td>0</td><td>0,006629</td></tr>
+                <tr><td>0</td><td>0,005577</td></tr>
+                <tr><td>0</td><td>0,005463</td></tr>
+                <tr><td>0</td><td>0,006622</td></tr>
+                <tr><td>0</td><td>0,005674</td></tr>
+                <tr><td>0</td><td>0,00568</td></tr>
+                <tr><td>0</td><td>0,006081</td></tr>
+            </tbody>
+            <tfoot>
+                <th class="center" colspan="2">Média</th>
+                <tr><td>0</td><td>0,005828</td></tr>
+            </tfoot>
+        </table>
+
+        <p class="noindent"></p>
+
+        <table id="teststcp3" class="tableresults tableborder">
+            <thead>
+                <tr><th>5 bytes por mensagem</th><th>200 mensagens</th></tr>
+                <tr><th class="center" colspan="2">1000 bytes no total</th></tr>
+                <tr><th>Pacotes perdidos</th><th>Tempo</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>0</td><td>0,002677</td></tr>
+                <tr><td>0</td><td>0,002742</td></tr>
+                <tr><td>0</td><td>0,002643</td></tr>
+                <tr><td>0</td><td>0,005654</td></tr>
+                <tr><td>0</td><td>0,003102</td></tr>
+                <tr><td>0</td><td>0,005231</td></tr>
+                <tr><td>0</td><td>0,003078</td></tr>
+                <tr><td>0</td><td>0,002719</td></tr>
+                <tr><td>0</td><td>0,003068</td></tr>
+                <tr><td>0</td><td>0,002708</td></tr>
+            </tbody>
+            <tfoot>
+                <th class="center" colspan="2">Média</th>
+                <tr><td>0</td><td>0,003462</td></tr>
+            </tfoot>
+        </table>
+        
+        <p class="noindent">
+        </p>
+        <hr class="endfloat" /><br/>
+
+        <h3 class="sectionHead">
+            <span class="titlemark">4</span> 
+            <a id="sec4"></a>Conclusão
+        </h3>
+        
+        <p class="noindent">
+            Neste trabalho, foram implementado testes a fim de comparar transmissão de dados via UDP e via TCP. Com isso, foi possível concluir que o UDP consegue transmitir dados em uma quantidade levemente menor que o TCP, a um custo de ter que gerenciar a perda de pacotes de forma manual. O tempo entre UDP e TCP está semelhante nos nossos testes porque desabilitamos o Algoritmo de Nagle por meio da opção de socket <code class="mono">TCP_NODELAY</code>, resultando em menor latência e tempos totais de transmissão mais próximos, implicando que o TCP funciona de forma bastante eficiente diante das funcionalidades e comodidades que oferece ao programador.
+        </p>
+        
+        <p class="noindent">
+        </p>
+        <hr class="endfloat" /><br/>
+
+        <h3 class="sectionHead">
+            <span class="titlemark">5</span> 
+            <a id="sec5"></a>Arquivos
+        </h3>
+
+        <p class="noident">Trabalho Prático de Redes II</p>
+
+        <p class="noident">
+            <a href="makefile.txt">makefile.txt</a><br/>
+            <a href="runner.c.txt">runner.c.txt</a><br/>
+            <a href="runner.h.txt">runner.h.txt</a><br/>
+            <a href="Structures.h.txt">Structures.h.txt</a><br/>
+            <a href="Socket_handler.c.txt">Socket_handler.c.txt</a><br/>
+            <a href="Socket_handler.h.txt">Socket_handler.h.txt</a><br/>
+            <a href="TCP_cliente.c.txt">TCP_cliente.c.txt</a><br/>
+            <a href="TCP_cliente.h.txt">TCP_cliente.h.txt</a><br/>
+            <a href="TCP_server.c.txt">TCP_server.c.txt</a><br/>
+            <a href="TCP_server.h.txt">TCP_server.h.txt</a><br/>
+            <a href="UDP_cliente.h.txt">UDP_cliente.h.txt</a><br/>
+            <a href="UDP_cliente.c.txt">UDP_cliente.c.txt</a><br/>
+            <a href="UDP_server.c.txt">UDP_server.c.txt</a><br/>
+            <a href="UDP_server.h.txt">UDP_server.h.txt</a><br/>
+        </p>
+
+        <p class="noident"></p>
+        <hr class="endfloat" /><br/>
+
+        <p class="noident">Logs</p>
+        <p class="noident">
+            <a href="cltTCP.txt">Log cliente TCP</a><br/>
+            <a href="cltUDP.txt">Log cliente UDP</a><br/>
+            <a href="svrTCP.txt">Log servidor TCP</a><br/>
+            <a href="svrTCP.txt">Log servidor UDP</a><br/>
+        </p>
+
     </body>
 </html>
