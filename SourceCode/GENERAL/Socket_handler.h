@@ -24,3 +24,12 @@ void socket_close_listener(socket_listener_info* sckt);
 
 // fill a buffer up to the size determined
 void socket_fill_buffer(socket_sender_info* sckt, unsigned long sizeToFill);
+
+// compare the given sequence number with the current sequence
+// saves the difference as package lost
+void socket_compare_sequence(int sequence_numb);
+
+// allows the sequence to be changed globally
+int socket_set_sequence(int newSeq);
+// returns the amount of package lost
+int socket_get_package_lost();
