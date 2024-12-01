@@ -17,6 +17,11 @@ int tclt_prep_sender_socket(socket_sender_info* sckt) {
 
     //--
 
+    int valtrue = 1, valfalse = 0;
+    if(setsockopt(sckt->socket_identifier, IPPROTO_TCP, TCP_NODELAY, &valtrue, sizeof(valtrue)) < 0) {
+      fprintf(stderr, "ERRO: Nao foi possivel definir opcoes para o socket\n");
+    }
+
     return 1;
 }
 
@@ -27,17 +32,38 @@ int tclt_prep_sender_socket(socket_sender_info* sckt) {
 
 
 // Send 1 message to server
-// return 1 for success, 0 for error
-int tclt_send_message(socket_listener_info* sckt, int msgSize) {
+// return the time it took to send or negative for error
+float tclt_send_message(socket_sender_info* sckt, int msgSize) {
+
+    if (sckt == NULL) {
+        fprintf(stderr, "ERRO: Scoket nao existente\n");
+        return -1.0f;
+    }
+
+    //--
     
+    socket_fill_buffer(sckt, msgSize);
 
     //--
 
-    
+    fprintf(stderr, "Enviando %d bytes de dados...\n", msgSize);
+
+    float tStart = clock();       // get the time start
+    int msgSent = sendto(sckt->socket_identifier, sckt->buffer, msgSize, 0, (struct sockaddr *) NULL, 0);
+    float tEnd = clock();
 
     //--
 
-    return 1;
+    if (msgSent != msgSize) {
+        return -2.0f;
+    }
+
+    fprintf(stderr, "Mensagem recebida pelo servidor\n");
+
+    //--
+
+    return ((tEnd - tStart) / CLOCKS_PER_SEC);
+    //return 1;
 }
 
 

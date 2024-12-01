@@ -33,7 +33,8 @@ int main(int argc, char* argv[]) {
     int runnerType;
     char ipDestino[64];
 
-    fprintf(stderr, "       Servidor(1) ou Cliente(2) ou send FIM separado(3)\n");
+    fprintf(stderr, "       Servidor(1) ou Cliente(2) ou enviar mensagem FIM(5)\n");
+    fprintf(stderr, "       Servidor(3) ou Cliente(4) TCP\n");
     scanf("%d", &runnerType);
 
 
@@ -80,51 +81,35 @@ int main(int argc, char* argv[]) {
             
             socket_sender_info* scktS = socket_create_sender(ipDestino, SOCK_DGRAM);
             uclt_prep_sender_socket(scktS);
-
-            //// ==== start sending messages
-
-            int bytesSent;
+            uclt_send_message(scktS, 3);
             
-            float timeStart = clock();
-            for (bytesSent = 0; bytesSent < SENDSIZE; bytesSent += MESSAGESIZE) {
-                if (uclt_send_message(scktS, MESSAGESIZE) < 0) {
-                    bytesSent -= MESSAGESIZE;
-                    fprintf(stderr, "ERRO: ao enviar mensagem\n");
-                    break;
-                }
-            }
-            float timeEnd = clock();
-
-            uclt_send_FIM_message(scktS);
-            
-            //// ==== close socket and print output
-
-            fprintf(stderr, "       Bytes enviador : %d\n", bytesSent);
-            fprintf(stderr, "       Tempo total : %f\n", ((timeEnd - timeStart) / CLOCKS_PER_SEC));
-
-            socket_close_sender(scktS);
+            fprintf(stderr, "Terminado...\n");
 
         break;
 
-        case (3) :  // FIM de emergencia
+        case (3):   // Servidor TCP
 
-            //// ==== get Server name
+            socket_listener_info* scktLT = socket_create_listener(SOCK_STREAM);
 
+            tsvr_prep_listener_socket(scktLT);
+            tsvr_receive_message(scktLT);
+
+            fprintf(stderr, "%d - %d - %d\n", scktLT->buffer[0], scktLT->buffer[1], scktLT->buffer[2]);
+
+        break;
+
+        case (4):   // Cliente TCP
             fprintf(stderr, "       Insira o IP do Host do servidor\n\n");
             scanf("%s", ipDestino);
 
-            //// ==== Create variables and sockets
+            //--
             
-            socket_sender_info* scktSS = socket_create_sender(ipDestino, SOCK_DGRAM);
-            uclt_prep_sender_socket(scktSS);
+            socket_sender_info* scktST = socket_create_sender(ipDestino, SOCK_STREAM);
 
-            //// ==== start sending messages
-
-            uclt_send_FIM_message(scktSS);
+            tclt_prep_sender_socket(scktST);
+            tclt_send_message(scktST, 3);
             
-            //// ==== close socket and print output
-
-            socket_close_sender(scktSS);
+            fprintf(stderr, "Terminado...\n");
 
         break;
     }

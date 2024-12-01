@@ -48,14 +48,16 @@ int tsvr_receive_message(socket_listener_info* sckt) {
 
     //--
 
-    int numbytes = 1;
+    int numbytes = 0, recvbytes = 1;
 
     fprintf(stderr, "Recebendo mensagem...\n");
 
-    while(numbytes) {
-        numbytes = read(sckt_listening, sckt->buffer, BUFSIZ);
-        fprintf(stderr, "   Recebido %d bytes\n", numbytes);
+    while(recvbytes) {
+        recvbytes = read(sckt_listening, sckt->buffer + numbytes, (numbytes>BUFSIZ) ? 0 : BUFSIZ-numbytes);
+        numbytes += recvbytes;
+        //fprintf(stderr, "   Recebido %d bytes\n", numbytes);
     }
+    fprintf(stderr, "   Recebido %d bytes\n", numbytes);
     
     fprintf(stderr, "Acabou as mensagens, encerrando conexao\n");
 
